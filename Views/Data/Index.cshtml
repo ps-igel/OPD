@@ -1,0 +1,229 @@
+﻿@model OPD.ViewModels.CompleteViewModel
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+    .filterbox {
+        border: 2px solid #d9230f;
+        padding:2px;
+    }
+    .range {
+        width:60px;
+    }
+</style>
+
+<div id="accordion">
+    <div class="card">
+        @*<div class="card-header" id="headingOne">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        >> info panel <<
+                    </button>
+            </div>*@
+        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="~/images/parrot.png" class="img-fluid" alt="Responsive image">
+                    </div>
+                    <div class="col-md-6 offset-md-2">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Process engineer</h4>
+                                <h6>I like data!</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <a class="btn btn-primary" href="/workflows/engineer" role="button">There you go &raquo;</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Image Analyst</h4>
+                                <h6>I like pictures!</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <a class="btn btn-primary" href="/workflows/engineer" role="button">This way &raquo;</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Modeler</h4>
+                                <h6>I like meshes!</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <a class="btn btn-primary" href="/workflows/engineer" role="button">Hurry &raquo;</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br /><br />
+
+<div class="row">
+    <div class="col-md-12" style="        padding:2px 0px 2px 5px;
+        background: #d9230f;
+        color: #ffffff">
+        Let's start with filtering.
+    </div>
+</div>
+<br />
+
+    @using (Ajax.BeginForm("Search", "Data", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "divSearchResults", LoadingElementId = "filter_loading" }))
+    {
+        @Html.AntiForgeryToken();
+
+        <div class="row">
+            <div class="col-md-2">
+                @Html.DisplayNameFor(model => model.FilterViewModel.Material)
+            </div>
+            <div class="col-md-2">
+                @Html.DropDownListFor(model => model.FilterViewModel.Material, Model.FilterViewModel.MaterialList, "--all--", new { @class = "filterbox" })
+            </div>
+            <div class="col-md-2">
+                @Html.DisplayNameFor(model => model.FilterViewModel.MinVoxelSize)
+            </div>
+            <div class="col-md-2">
+                <div class="row">
+                    <div class="col-md-5">
+                        min<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MinVoxelSize, new { @class = "filterbox range" })
+                    </div>                    
+                    <div class="col-md-5">
+                        max<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MaxVoxelSize, new { @class = "filterbox range" })
+                    </div>
+                </div>               
+            </div>
+            <div class="col-md-2">
+                @Html.DisplayNameFor(model => model.FilterViewModel.MinEquivalentSphericalDiameter)
+            </div>
+            <div class="col-md-2">
+                <div class="row">
+                    <div class="col-md-5">
+                        min<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MinEquivalentSphericalDiameter, new { @class = "filterbox range" })
+                    </div>
+                    <div class="col-md-5">
+                        max<br/>
+                        @Html.TextBoxFor(model => model.FilterViewModel.MaxEquivalentSphericalDiameter, new { @class = "filterbox range" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-2">
+                @Html.DisplayNameFor(model => model.FilterViewModel.Process)
+
+            </div>
+            <div class="col-md-2">
+                @Html.DropDownListFor(model => model.FilterViewModel.Process, Model.FilterViewModel.ProcessList, "--all--", new { @class = "filterbox" })
+            </div>
+            <div class="col-md-2">
+                @Html.DisplayNameFor(model => model.FilterViewModel.MinNumberObjectVoxels)
+
+            </div>
+            <div class="col-md-2">
+                <div class="row">
+                    <div class="col-md-5">
+                        min<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MinNumberObjectVoxels, new { @class = "filterbox range" })
+                    </div>
+                    <div class="col-md-5">
+                        max<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MaxNumberObjectVoxels, new { @class = "filterbox range" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                @Html.DisplayNameFor(model => model.FilterViewModel.MinSphericity)
+
+            </div>
+            <div class="col-md-2">
+                <div class="row">
+                    <div class="col-md-5">
+                        min<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MinSphericity, new { @class = "filterbox range" })
+                    </div>
+                    <div class="col-md-5">
+                        max<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MaxSphericity, new { @class = "filterbox range" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-2">
+
+            </div>
+            <div class="col-md-2">
+
+            </div>
+            <div class="col-md-2">
+                @Html.DisplayNameFor(model => model.FilterViewModel.MinNumberSurfaceVoxels)
+
+            </div>
+            <div class="col-md-2">
+                <div class="row">
+                    <div class="col-md-5">
+                        min<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MinNumberSurfaceVoxels, new { @class = "filterbox range" })
+                    </div>
+                    <div class="col-md-5">
+                        max<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MaxNumberSurfaceVoxels, new { @class = "filterbox range" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                @Html.DisplayNameFor(model => model.FilterViewModel.MinFeretBoxFillingRatio)
+
+            </div>
+            <div class="col-md-2">
+                <div class="row">
+                    <div class="col-md-5">
+                        min<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MinFeretBoxFillingRatio, new { @class = "filterbox range" })
+                    </div>
+                    <div class="col-md-5">
+                        max<br />
+                        @Html.TextBoxFor(model => model.FilterViewModel.MaxFeretBoxFillingRatio, new { @class = "filterbox range" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-3">
+                <button class="btn btn-primary" type="submit" id="btnSearch" onclick="$('.collapse').collapse();">
+                    <span class="glyphicon glyphicon-search"></span>
+                    Apply selected filters
+                    <img id="filter_loading" style="display:none;" src="@Url.Content("~/images/loading.gif")" alt="" width="18" />
+                </button>
+                
+            </div>
+            <div class="col-md-2 offset-md-7">
+                <a href="/" class="btn btn-success glyphicon glyphicon-reset" role="button">Reset all filters</a> 
+            </div>
+        </div>
+            }
+
+<br />
+            <div id="divSearchResults">
+            </div>
+
+<br />
+            <div id="divData">
+            </div>
+
+<br />
+
+            <div id="divDownload">
+            </div>
+
+            <script src="/Scripts/stl/stl_viewer.min.js"></script>

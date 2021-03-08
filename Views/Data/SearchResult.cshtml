@@ -1,0 +1,59 @@
+﻿@model OPD.ViewModels.SearchResultViewModel
+@{
+    ViewBag.Title = "Analytic";
+}
+@Scripts.Render("~/bundles/jquery")
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken();
+
+    <br />
+    
+    <br /><br />
+<table class="table table-striped">    
+    <thead>
+        <tr>
+            <th>
+                particle_id
+            </th>
+            <th>
+                voxelSize
+            </th>
+            <th>
+                volume
+            </th>
+            <th>
+                nr_object_voxels
+            </th>
+            <th>
+                nr_surface_voxels
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.details.OrderBy(x => x.particle_id))
+        {
+            <tr>
+                <td>
+                    @item.particle_id
+                </td>
+                <td>
+                    @item.voxelSize
+                </td>
+                <td>
+                    @item.volume
+                </td>
+                <td>
+                    @item.nr_object_voxels
+                </td>
+                <td>
+                    @item.nr_surface_voxels
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+
+

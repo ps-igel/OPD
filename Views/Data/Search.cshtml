@@ -1,0 +1,78 @@
+﻿@model OPD.ViewModels.CompleteViewModel
+@{
+    ViewBag.Title = "Search";
+}
+<style>    
+    .preview {
+        height: 200px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12" style="        padding:2px 0px 2px 5px;
+        background: #d9230f;
+        color: #ffffff">
+        What do the related particle systems looks like?
+    </div>
+</div>
+<br />
+
+@if (Model == null || Model.SearchViewModel.Count() == 0)
+{
+    <p>Oops, we did not find any particles with that description. :-( </p>
+}
+else
+{
+    using (Ajax.BeginForm("Data", "Data", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "divData", LoadingElementId="search_loading" }))
+    {
+        @Html.AntiForgeryToken();
+
+        @Html.HiddenFor(model => model.FilterSettings);
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">@Html.LabelFor(model => Model.SearchViewModel[0].Material)</th>
+                    <th scope="col">@Html.LabelFor(model => Model.SearchViewModel[0].NumberFilteredParticles)</th>
+                    <th scope="col">@Html.LabelFor(model => Model.SearchViewModel[0].SEMExample)</th>
+                    <th scope="col">@Html.LabelFor(model => Model.SearchViewModel[0].SEMExampleDetail)</th>
+                    <th scope="col">@Html.LabelFor(model => Model.SearchViewModel[0].ParticleSizeDistribution)</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @for (int i = 0; i < Model.SearchViewModel.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Html.CheckBoxFor(m => Model.SearchViewModel[i].Checked)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(model => Model.SearchViewModel[i].Material)
+                            @Html.HiddenFor(model => Model.SearchViewModel[i].Material)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => Model.SearchViewModel[i].NumberFilteredParticles)
+                        </td>
+                        <td>
+                            <img src="@Url.Content(Model.SearchViewModel[i].SEMExampleFullPath)" class="preview" />
+                        </td>
+                        <td>
+                            <img src="@Model.SearchViewModel[i].SEMExampleDetailFullPath" class="preview" />
+                        </td>
+                        <td>
+                            <img src="@Model.SearchViewModel[i].ParticleSizeDistributionFullPath" class="preview" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">
+                <span class="glyphicon glyphicon-search"></span>
+                Show selected
+                <img id="search_loading" style="display:none;" src="@Url.Content("~/images/loading.gif")" alt="" width="18" />
+            </button>
+        </div>
+    }
+}

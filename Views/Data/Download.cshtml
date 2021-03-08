@@ -1,0 +1,74 @@
+﻿@model OPD.ViewModels.CompleteViewModel
+<div class="row">
+    <div class="col-md-12" style="        padding:2px 0px 2px 5px;
+        background: #d9230f;
+        color: #ffffff">
+        Where can I get the related RAW data for individual image processing?
+    </div>
+</div>
+<br />
+
+@if (Model != null && Model.DownloadViewModel.Count() == 0)
+{
+    <p>Oops, something went wrong. :-( </p>
+}
+else
+{
+    using (Ajax.BeginForm("DownloadFile", "Data", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "" }))
+    {
+        @Html.AntiForgeryToken();
+
+        @Html.HiddenFor(model => model.FilterSettings);
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].Checked)</th>
+                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].Material)</th>
+                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].FileNameAndPathToStl)</th>
+                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].DownloadStl)</th>
+                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].DownloadVtk)</th>
+                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].DownloadCsv) </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @for (int i = 0; i < Model.DownloadViewModel.Count; i++)
+                {
+                <tr>
+                    <td>
+                        @Html.CheckBoxFor(m => Model.DownloadViewModel[i].Checked)
+                        @Html.HiddenFor(m => Model.DownloadViewModel[i].MeasurementId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => Model.DownloadViewModel[i].Material)
+                    </td>
+                    <td>
+                        @*<img src='@Model[i].FileName' alt='@Model[i].FileName' style="width:150px" />*@
+                        <div id="@("stl" + Model.DownloadViewModel[i].MeasurementId)" style="background-color:#000000; width:200px; height:200px"></div>
+                        <script type="text/javascript">
+                                var stl_viewer_@("stl" + Model.DownloadViewModel[i].MeasurementId) = new StlViewer(document.getElementById("@("stl" + Model.DownloadViewModel[i].MeasurementId)"), { models: [{ id: @(Model.DownloadViewModel[i].MeasurementId), filename: "@Model.DownloadViewModel[i].FileNameAndPathToStl", load_three_files: "/Scripts/stl", animation: { delta: { rotationy: 1, msec: 1000, loop: true } } }] });
+                        </script>
+                    </td>
+                    <td>
+                        @Html.CheckBoxFor(m => Model.DownloadViewModel[i].DownloadStl)
+                    </td>
+                    <td>
+                        @Html.CheckBoxFor(m => Model.DownloadViewModel[i].DownloadVtk)
+                    </td>
+                    <td>
+                        @Html.CheckBoxFor(m => Model.DownloadViewModel[i].DownloadCsv)
+                    </td>
+                </tr>
+                }
+
+            </tbody>
+        </table>
+        @*<a class="btn btn-primary" href="/Data/Download?fileName=">Download selected</a>*@
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">
+                <span class="glyphicon glyphicon-search"></span>
+                Download selected
+            </button>
+        </div>
+    }
+}

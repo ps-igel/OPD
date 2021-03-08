@@ -1,0 +1,87 @@
+﻿@model OPD.ViewModels.CompleteViewModel
+@{
+    ViewBag.Title = "Data";
+}
+<style>
+    .preview {
+        height: 200px;
+    }
+
+    .external_link {
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12" style="        padding:2px 0px 2px 5px;
+        background: #d9230f;
+        color: #ffffff">
+        Where can I get the related RAW data for individual image processing?
+    </div>
+</div>
+<br />
+
+
+@if (Model != null && Model.DataViewModel.Count() == 0)
+{
+    <p>Oops, something went wrong. :-( </p>
+}
+else
+{
+    using (Ajax.BeginForm("Download", "Data", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "divDownload", LoadingElementId = "data_loading" }))
+    {
+        @Html.AntiForgeryToken();
+
+        @Html.HiddenFor(model => model.FilterSettings);
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">@Html.LabelFor(model => Model.DataViewModel[0].Material)</th>
+                    <th scope="col">@Html.LabelFor(model => Model.DataViewModel[0].Process)</th>
+                    <th scope="col">@Html.LabelFor(model => Model.DataViewModel[0].NumberFilteredParticles)</th>
+                    <th scope="col">@Html.LabelFor(model => Model.DataViewModel[0].VoxelSize)</th>
+                    <th scope="col">@Html.LabelFor(model => Model.DataViewModel[0].ExampleImageFromStack)</th>
+                    <th scope="col">@Html.LabelFor(model => Model.DataViewModel[0].RawImageDownloadURL)</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @for (int i = 0; i < Model.DataViewModel.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Html.CheckBoxFor(m => Model.DataViewModel[i].Checked)
+                            @Html.HiddenFor(m => Model.DataViewModel[i].MeasurementId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => Model.DataViewModel[i].Material)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => Model.DataViewModel[i].Process)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => Model.DataViewModel[i].NumberFilteredParticles)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => Model.DataViewModel[i].VoxelSize)
+                        </td>
+                        <td>
+                            <img src="@Model.DataViewModel[i].ExampleImageFromStackFullPath" class="preview" />
+                        </td>
+                        <td>
+                            <a href="@Model.DataViewModel[i].RawImageDownloadURL" target="_blank" class="external_link">Link zu Opara</a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">
+                <span class="glyphicon glyphicon-search"></span>
+                Show selected
+                <img id="data_loading" style="display:none;" src="@Url.Content("~/images/loading.gif")" alt="" width="18" />
+            </button>
+        </div>
+    }
+}

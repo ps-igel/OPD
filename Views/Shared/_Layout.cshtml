@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Particle Database - @ViewBag.Title</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/simplex/bootstrap.css" media="screen">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)    
+</head>
+<body>
+    <div class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">PARROT</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    @*<li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Data</a>
+                        <div class="dropdown-menu">                           
+                        </div>
+                    </li>*@
+                    <li class="nav-item">
+                        @Html.ActionLink("Data", "Index", "Data", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Workflows", "Index", "Workflows", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        
+                        @Html.ActionLink("Help", "Index", "Help", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "nav-link" })
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <footer class="footer">
+                <div class="container">
+                    <p>&copy; @DateTime.Now.Year - Online Particle Database</p>
+                </div>
+            </footer>
+        </div>
+
+
+</body>
+</html>

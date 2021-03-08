@@ -1,0 +1,323 @@
+<html>
+<head>
+	
+	<!-- placeholder for Link to Parrot site: "/" -->
+	
+</head>
+	
+<body>
+  <link rel="stylesheet" href="/Views/Help/styles.css">
+  
+
+  
+  <p style="color:blue" id="Note"><b>Please note</b> that the current version of the particle database is adapted to our measurement equipment (<i>Zeiss Xradia VERSA 510</i>). 
+     So, measurement parameters are indicated as general as possible but with equipment specific parameter attributes (e.g. source filter). A more general approach with a structure
+     that can accommodate the specifics of different measurement systems would have required a much larger number of parameters and would thus go far beyond the scope of a feasibility
+     study. Of course, this is a point for a possible scale-up of the system. Nevertheless, all parameters (except reconstruction) are easily comparable with other systems. 
+     In case of calculated parameters, the calculations rules are explicitly given in the corresponding paragraph.</p>
+  <hr>
+<!-- ############# --> 
+<!-- ## GENERAL ## --> 
+<!-- ############# -->
+  <h1 id="GEN">General</h1>
+  <table border=0><tr><td>  <h2 id="GEN:Parrot"><b>PARROT</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p><i>PARROT</i> stands for an <i>o<b>P</b>en <b>A</b>ccess a<b>R</b>chive for pa<b>R</b>ticle discrete t<b>O</b>mographic da<b>T</b>asets.</i>
+     As certainly not the most obvious acronym, the <i>PARROT</i> is supposed to represent the different expressions of particle properties. Just as a bird grasps individual discrete parts of its food with its beak, 
+     we would like to provide a repository of a significantly large number of particles from various practically important particle systems. The implementation is some kind of <i>Pilot Study</i> which makes no claim 
+     to completeness - which in this case will never be possible. Rather, it should be about the general way of implementation. Which <i>Use Cases</i> exist in practice, which <i>Data</i> and <i>Metadata</i> are required 
+     for this, how can this be mapped in a <i>Database</i> structure that allows users convenient access and generates added value?
+  </p>  
+  <img src="figures/parrot.png" alt="PARROT Database">
+<br>
+<br>
+  <table border=0><tr><td>  <h2 id="GEN:Approach"><b>User Driven Approach</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>There are different strategies to implement a database system. By eliminating all redundancies and systematically optimizing hardware storage and query time, the system is perfectly adapted to the existing data - let's call
+     this <i>Data Driven Approach</i>. The disadvantage is that although the structure is very easy to maintain from an administrative point of view, it is difficult to understand for the normal user. Queries are performant in execution but complex to create.
+     With PARROT, we want to take a different approach, one that is <i>User Driven</i>. <i>(1)</i> Redundancies should be avoided and storage space optimized <b>but not at any price</b>. <i>(2)</i> Raw data should be stored separately and external frameworks should be used 
+     (see <a href="#GEN:Opara">OpARA</a>) to keep the system tight and to make it realizable up to a certain size for everyone interested without high costs. And <i>(3)</i> to create a system that is intuitive in its structure and easy to query.</p>  
+  <!--<img src="figures/userDrivenApproach.png" alt="User Driven Approach">-->
+<br>
+  <table border=0><tr><td>  <h2 id="GEN:ParticleDiscrete"><b>Particle Discrete Data</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Particles are considered as single objects or as part of a collective. Particle-discrete means, that collectives are not only considered as a composite with aggregated properties,
+  but each individual particle of this composite additionally with stand-alone properties. This view allows to describe particle systems simultaneously with respect to several different properties (multidimensional)</p>  
+<br>
+<br>
+  <!--<img src="figures/particleDiscrete.png" alt="Particle Discrete Data">-->
+  <table border=0><tr><td>  <h2 id="GEN:RelationalDatabase"><b>Relational Database</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>In most cases data and metadata can be part of different aggregation levels. E.g. measurement values are available for each single measurement object. The parameters of the measurement itself are mostly the same 
+     for the whole time of the measurement. They are directly linked to the measurement but also a valuable information for the measured objects. To avoid redundancies, a relational database, in this example, would have at least two
+     tables, one very small for the measurement (each row/dataset refers to one measurement) and a large one for the objects. Each element within the tables is uniquely identified by a primary key (e.g. object_id / measurement_id)
+     that can be used to link the tables and get a full set of all the information without storing it statically.</p> 
+<br>
+<br>  
+  <!--<img src="figures/relationalDatabase.png" alt="Relational Database">-->
+  <table border=0><tr><td>  <h2 id="GEN:Opara"><b>OpARA</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p><a target="_blank" href="https://opara.zih.tu-dresden.de/xmlui/?locale-attribute=en">OpARA</a> is an <i>Open Access Online Repository</i> for scientific data. It is a joint project of the <a target="_blank" href="https://tu-dresden.de/?set_language=en#">TU Dresden</a> 
+     and the <a target="_blank" href="https://tu-freiberg.de/en">TU Bergakademie Freiberg</a>. The <i>PARROT</i>-database uses this repository to save the raw image data in form of
+     TIFF stacks combined with related metadata and preview images of the particle system captured with <i>Scanning Electron</i> or <i>Optical Microscopy</i>. This raw data is the starting point for the <i>Image Analyst</i>
+     who wants to develop and test new image processing algorithms. As a starting point, the authors have developed their own segmentation workflows (<a target="_blank" href="https://imagej.net/Fiji">Fiji/ImageJ</a>), which serve as the 
+     basis for the pilot study. These processed image stacks are also stored in OpARA. The connection between <i>PARROT</i> and <i>OpARA</i> is realized with a <i>Digital Object Identifier (DOI)</i> that is accessible
+     online worldwide and easily referenced in publications. The <i>DOI</i> is unique an thus, can serve as a primary key within <i>PARROT</i>.</p>
+<br>
+<br>
+<br>
+
+  
+  
+<!-- ############################################### --> 
+<!-- ## Import from ImageJ Objects Counter result ## --> 
+<!-- ############################################### -->
+  
+  <h1 id="PART">Particle discrete data</h1>
+  <table border=0><tr><td>  <h2 id="PART:Volume"><b>Volume</b> <i>in px<sup>3</sup></i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Describes the volume of the particle.
+  (details see the <a target="_blank" href="https://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:3d_object_counter:3d-oc.pdf">ImageJ/ObjectCounter Plugin Documentation</a>)
+  </p>  
+<br>
+  <table border=0><tr><td>  <h2 id="PART:Surface"><b>Surface</b> <i> in px<sup>2</sup></i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Describes the surface of the particle.
+    (details see the <a target="_blank" href="https://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:3d_object_counter:3d-oc.pdf">ImageJ/ObjectCounter Plugin Documentation</a>)
+  </p>    
+<br>
+  <table border=0><tr><td>  <h2 id="PART:Nb_Object_Voxels"><b>Nb_Object_Voxels</b> <i>(number of object voxels)</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Number of all voxels that the particle consists of. Note that in the case of closed pores within the particle, 
+     this may be significantly less than the external shape would suggest.
+    (details see the <a target="_blank" href="https://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:3d_object_counter:3d-oc.pdf">ImageJ/ObjectCounter Plugin Documentation</a>)
+  </p>  	 
+<br>
+  <table border=0><tr><td>  <h2 id="PART:Nb_Surface_Voxels"><b>Nb_Surface_Voxels</b> <i>(number of surface voxels)</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Number of all voxels of the particle that are in contact with the background of the image.
+	 (details see the <a target="_blank" href="https://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:3d_object_counter:3d-oc.pdf">ImageJ/ObjectCounter Plugin Documentation</a>)
+  </p>  
+<br>
+  <table border=0><tr><td>  <h2 id="PART:Mean_Distance_To_Surface"><b>Mean_Distance_To_Surface</b> <i>in px</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Average distance from the geometric centre of the particle to the surface.
+  (details see the <a target="_blank" href="https://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:3d_object_counter:3d-oc.pdf">ImageJ/ObjectCounter Plugin Documentation</a>)
+  </p>  
+<br>
+  <table border=0><tr><td>  <h2 id="PART:Median_Distance_To_Surface"><b>Median_Distance_To_Surface</b> <i>in px</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Median distance from the geometric centre of the particle to the surface.
+  (details see the <a target="_blank" href="https://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:3d_object_counter:3d-oc.pdf">ImageJ/ObjectCounter Plugin Documentation</a>)
+  </p>  
+<br>
+  <table border=0><tr><td>  <h2 id="PART:XYZ"><b>X, Y, Z</b> <i>in px (Position in space)</i></h2  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>3D coordinates of the particle's geometric centre.
+  (details see the <a target="_blank" href="https://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:3d_object_counter:3d-oc.pdf">ImageJ/ObjectCounter Plugin Documentation</a>)
+  </p>  
+<br>
+  <table border=0><tr><td>  <h2 id="PART:XmYmZm"><b>XM, YM, ZM</b> <i>in px ()</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>3D coordinates of the particle's centre of mass.
+  (details see the <a target="_blank" href="https://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:3d_object_counter:3d-oc.pdf">ImageJ/ObjectCounter Plugin Documentation</a>)
+  </p>  
+<br>
+  <table border=0><tr><td>  <h2 id="PART:BxByBz"><b>BX, BY, BZ</b> <i>in px ()</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Coordinates of the upper left corner of the smallest box encompassing the particle (sometimes called Feret box).
+  (details see the <a target="_blank" href="https://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:3d_object_counter:3d-oc.pdf">ImageJ/ObjectCounter Plugin Documentation</a>)
+  </p>  
+<br>
+  <table border=0><tr><td>  <h2 id="PART:BwidthBheightBdepth"><b>B_Width, B_Height, B_Depth</b> <i>in px ()</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Dimensions of the smallest box encompassing the particle (sometimes called Feret box).
+  (details see the <a target="_blank" href="https://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:3d_object_counter:3d-oc.pdf">ImageJ/ObjectCounter Plugin Documentation</a>)<br>
+  <!--<img src="figures/feret.png" alt="Sphericity"><br>-->
+  </p>  
+  
+<!-- ##################################################### --> 
+<!-- ## CALCULATED parameters supplied by Image Analyst ## --> 
+<!-- ##################################################### -->
+  
+<br>
+  <table border=0><tr><td>  <h2 id="CALC:Equivalent_spherical_diameter"><b>Equivalent_spherical_diameter</b> <i>in µm</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>The <i>ESD</i> is the diameter of a sphere that has the same volume as the particle.</p>
+  <img src="figures/EQ_esd.png" alt="Equation Equivalent Spherical Diameter"><br>
+  <!--<img src="figures/esd.png" alt="Equivalent Spherical Diameter"><br>-->
+  <p>Note that this parameter causes more and more problems the further the particle shape moves away 
+  from the ideal spherical one. So, it should always be &lsquo;evaluated&rsquo; with the help of another parameter, called <i>Sphericity</i>, or by direct
+  microscopic imaging. If the <i>Particle System</i> is assumed to plate- or needle-like, <i>ESD</i> is not reasonable.</p> 
+<br>
+  <table border=0><tr><td>  <h2 id="CALC:Sphericity"><b>Sphericity</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Sphericity is a measure of how closely the shape of an object is similar to the shape of a perfect sphere.</p> 
+  <img src="figures/EQ_sphericity.png" alt="Equation Sphericity"><br>
+  <!--<img src="figures/sphericity.png" alt="Sphericity"><br>-->
+<br>
+  <table border=0><tr><td>  <h2 id="CALC:Convexity"><b>Convexity</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>The surface of a particle is convex if a straight line between arbitrarily selectable points of this surface is completely inside the particle.</p>    
+<br>
+  <table border=0><tr><td>  <h2 id="CALC:SurfaceArea"><b>Surface Area </b> <i>in px<sup>2</sup></i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Number of surface pixels covering the surface of a particle. If the particle is very smooth, than this number should be very close to the
+     number of surface voxels. On rough surfaces a lot more sub areas are appearing - maximum 5 for one single voxel (the 6th is the connection to the particle).</p>   
+<br>
+  <table border=0><tr><td>  <h2 id="CALC:Feret_Box_filling_ratio"><b>Feret box filling ratio</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Indicates the percentage that a particle covers of the smallest enclosing cuboid (Ferret box).</p>
+  <img src="figures/EQ_feret.png" alt="Equation Filling Ratio"><br>
+  <!--<img src="figures/feret.png" alt="Sphericity"><br>-->
+<br>
+  <table border=0><tr><td>  <h2 id="CALC:Principal_Axis_Length"><b>Principal_Axis_Length 1,2,3</b> <i>in px (length of the principal axis)</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Length of the principal axis in x, y and z. A principle axis of a particle is an axis of rotation about which the particle can
+     continue to rotate without dynamic unbalance occuring.</p>   
+  
+<!-- ########################################## --> 
+<!-- ## MODEL parameters supplied by Modeler ## --> 
+<!-- ########################################## -->
+
+<br>
+  <table border=0><tr><td>  <h2 id="MOD:Settling_velocity"><b>Settling_velocity</b> <i>in m/s</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Determines how fast a particle settles inside a fluid under the influence of an accelerating force (e.g. gravitation)</p>   
+<br>
+  <table border=0><tr><td>  <h2 id="MOD:Settling_Align_XYZ"><b>Settling_Align_X,Y,Z</b> <i>(settling alignment)</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Stable alignment coordinates of a particle during settling. X, y and z are represanatatives of the refering 3D vector.</p>  
+<br>
+  <table border=0><tr><td>  <h2 id="MOD:Settling_align_time"><b>Settling_align_time</b> <i>in s (settling alignment time)</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Time until this alignment is reached.</p>
+<br>
+  <table border=0><tr><td>  <h2 id="MOD:Avg_align_to_vertical"><b>Avg_align_to_vertical</b> <i>in m (average alignment to vertical)</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Average alignment to the vertical axis aggregated over all vectors until the stable position is reached.</p>  
+  
+<hr>
+<!-- ############## --> 
+<!-- ## METADATA ## --> 
+<!-- ############## -->
+
+  <h1 id="SAMP">METADATA - Sample</h1>
+  
+<!-- ## SAMPLE ## -->
+  <table border=0><tr><td>  <h2 id="SAMP:Diameter"><b>Diameter </b> <i>in mm</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>To avoid differences in X-ray attenuation due to varying penetrated lengths, the sample should be rotational symmetric with constant diameter. In combination
+     with the <a href="#MEAS:Field_of_View">Field of View</a> it describes if the sample is fully covered by the measurement or the scan is inside the sample.
+     This is called <i>Region of Interest</i> tomography and can have significant influence on the needed <i>Scanning Time</i> and possible <i>Artefacts</i> (details
+     are given by <a target="_blank" href="https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2818.2010.03408.x">[KYRIELEIS 2010])</a></p> 
+<br>
+  <table border=0><tr><td>  <h2 id="SAMP:Height"><b>Height </b> <i>in mm</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>In contrast to the <a href="#MEAS:Field_of_View">Field of View</a>, the sample height describes the actual height of the sample. In combination with the 
+     <a href="#SAMP:Number_stacks">Number of Stacks</a>, it describes for what percentage of the sample has been included in the measurement.</p>
+<br>
+  <table border=0><tr><td>  <h2 id="SAMP:Number_stacks"><b>Number_stacks </b> <i>(number stacks)</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>If the <a href="#SAMP:Height">Sample Height</a> exceeds the <a href="MEAS:Field_of_View">Field of View</a>, it is possible to stack more than one measurements
+     virtually. This is done by measure single volumes that are overlapping each other by a certain percentage depending on the structures within the sample (normally
+     between 15 and 30 %).</p>
+<br>
+  <table border=0><tr><td>  <h2 id="SAMP:Material"><b>Material</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>The material of the particle sample, e.g. dolomite, limestone. Note that different material compositions are not visible in the volume file (<i>*.VTK, *.STL</i>).
+     For this purpose the segmentation via a single-thresholding has to be replaced with a multiple-thresholding algorithm based on the image data stored in the 
+     <a href="#GEN:Opara">OpARA</a> system, linked via <i>DOI</i>.</p>
+<br>
+  <table border=0><tr><td>  <h2 id="SAMP:Production_process"><b>Production_process</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>The manufacturing process that generated the particles. This parameter is essential to understand the particle morphology. Particles generated by a crushing process will surely be 
+     different from particles generated by spraying. If there are multiple processes or certain steps that helps to understand the certain particle morphology, they are named in order
+     of appearance and separated by semicolon.</p>
+<br>
+  <table border=0><tr><td>  <h2 id="SAMP:Official_project_number"><b>Official_project_number</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>If the particle system is part of an official project (e.g. <a target="_blank" href="https://www.dfg.de/en/index.jsp">Deutsche Forschungsgemeinschaft - DFG</a>), this number could help to link to related projects that may used
+     the same particle system for their research. Note that the financing for the <i>PARROT</i>-database is given by the <i>DFG</i> and the authors would like to thank them for their support!</p>  
+<hr>
+
+<!-- ## MEASUREMENT ## -->
+  <h1 id="MEAS">METADATA - Measurement</h1>
+  <table border=0><tr><td>  <h2 id="MEAS:Field_of_View"><b>Field_of_View </b> <i>in mm</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>The field of view (FOV) determines the size of the sample which is covered by the projection image on the detector (independent of the binning). If it is possible, the FOV should always be larger than the sample width.
+     Especially when dealing with very high magnifications the sample cannot easily be cut down to such small diameters or sample destruction should be avoided. In this case scanning is often called
+     region of interest tomography (ROI) and requires a much higher number of projections. Note that objects outside the FOV that pass the beam path only in a very small angular range can cause artefacts
+     in the final reconstruction, especially in the case of high attenuating phases.</p> 
+<br>
+  <table border=0><tr><td>  <h2 id="MEAS:Acceleration_Voltage"><b>Acceleration_Voltage </b><i>in keV</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>To produce X-ray radiation, electrons are accelerated by an electrical field with a certain <i>voltage</i>. In lab-based polychromatic systems, this value ranges mostly from
+  <i>30 keV to 160 keV</i>. This voltage determines the <u>maximum energy of the generated X-ray photons</u>.</p> 
+<br>
+  <table border=0><tr><td>  <h2 id="MEAS:Electrical_Power"><b>Electrical_Power </b><i>in W</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>The power, as product of <i>Acceleration Voltage</i> and <i>Tube Current</i> is proportional to the current and so, can be interpreted as some kind of energy flux that determines
+     the <u>number of generated photons</u>. Because the parameters are not independent of each other, there are reasonable combinations (<i>Voltage/Power</i>) for a stable X-ray
+     generation, e.g. <i>30/2</i>, <i>80/7</i>, <i>160/10</i>.</p>  
+<br>
+  <table border=0><tr><td>  <h2 id="MEAS:Source_Filter"><b>Source_Filter</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>As the X-ray spectrum is in this case polychromatic, the low-energy photons tend to cause artefacts in the final reconstruction that can be corrected afterwards by applying software filters
+     (see <a href="#RECON:Beam_Hardening_Correction">Beam Hardening Correction</a>). The better more elegant way is to avoid low-energy photons of passing the sample. Because software algorithms are
+     not perfect at all, this is the better way with regard to image quality. To do this, after passing the aperture, the X-ray beam is filtered by applying e.g. a thin copper foil. Low-energy photons
+     are absorbed at this point and will not longer be part of the beam. The filter is named as follows: <i>&lt;material&gt;;&lt;thickness&gt;</i>, e.g. Cu,100µm; in case of equipment specific description 
+     <i>LE (low energy) 1,2,3,4,5,6</i> or <i>HE (high energy) 1,2,3,4,5,6</i></p>   
+<br>
+  <table border=0><tr><td>  <h2 id="MEAS:Exposure_Time"><b>Exposure_Time </b><i>in s</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Each projection image captures (is exposed to) photons within a specific time. In moste cases this exposure time is a static parameter. Sometimes, in case of non-ideal, very elongated samples,
+     expousre time is varied to compensate for sample thickness variations - this is called <i>variable exposure time</i>. The minimum exposure time is determined by the minimum number of photons
+     per pixel (or binned virtual pixel) that is necessary to generate a sufficient signal-to-noise ratio (SNR). As it is in photography, there is also an upper limit for the exposure time.
+     If too many photons arrive at the detector, the electronic is being jammed - the projection is overexposed. To avoid this, modern systems do an automated overexposure check before starting
+     the acquisition.</p>  
+<br>
+  <table border=0><tr><td>  <h2 id="MEAS:Optical_Magnification"><b>Optical_Magnification</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Normal Micro-CT devices with cone-beam geometry have one single magnification step - the geometric magnification of the beam itself. Contrary, X-ray microscopes have a second additional magnification
+     step realized by optical lenses. Because X-rays cannot be handled with normal optical devices, they are transformed via scintillator material into photons of visual light (VIS) according to their energy.
+     A high energy X-ray photon generates more VIS photons than a low energy one. The projection on the scintillator is now optically magnified and projected a second time on the detector panel.
+     Availabe magnifications are e.g. 0.4x (macro), 4x, 20x and 40x. Note that the combination of geometrical and optical magnification (by multiplication) can generate very large magnifications
+     but without practical significance. Causes are mechanical drift of the system, thermal drift of the electron interaction zone within the target material, the inhomegeniety </p>
+<br>
+  <table border=0><tr><td>  <h2 id="MEAS:Number_Projections"><b>Number_Projections</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>The number of projection images determines the angular step size between two different projections. The finer this step size, the better the reconstruction result. There is a minimum number of projections
+     determined by the sample size within the filed of view. If there is a lot unused space around the captured object, this number is decreased. If there is a scan inside the sample, meaning that a lot of sample
+     material passes the beam path but is not inside the field of view, this number is increased. Details see <a target="_blank" href="https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2818.2010.03408.x">[Kyrieleis 2012]</a>. 
+  </p> 
+<br>
+  <table border=0><tr><td>  <h2 id="MEAS:Angular_Range"><b>Angular_Range </b><i>in degree</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>For tomographic measurement, the sample must be rotated to produce a series of projection images that have radiated through all parts of the sample from at least one direction - this corresponds to 180 degrees. To improve the signal-to-noise ratio <b>(SNR)</b>, 
+     in many cases scanning is done over 360 degrees. To avoid redundant overlapping of the same beam paths here (out and back after 180 degrees), a projection image is inserted to create an uneven number. The outward and return paths are now slightly offset, 
+     improving SNR and providing additional information (from additional angular ranges). 
+  </p>
+<br>
+  <table border=0><tr><td>  <h2 id="MEAS:Voxelsize"><b>Voxelsize </b><i>in µm</i></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>A voxel is a <b><u>vo</u></b>lume Pi<b><u>xel</u></b>, the smallest image unit of a tomographic data set. The pixel, familiar from image processing, with length and width, is given depth by tomographic reconstruction. In the real non-destructive tomographic measurement methods, 
+     these are ISO voxels, i.e. length, width and depth have the same dimension. In the case of destructive methods such as the Focused Ion Beam (FIB), slices of the sample are physically cut, which are subsequently visualized using scanning electron microscopy (SEM). 
+     Depending on the system, these slices have a minimum thickness that cannot be undercut in the case of very small voxel sizes - the voxel now has significantly poorer depth resolution compared to lateral resolution.
+  </p>
+<br>
+  <table border=0><tr><td>  <h2 id="MEAS:Binning"><b>Binning</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>To improve the signal-to-noise <b>(SNR)</b> ratio or to save exposure time in case of very good SNR, detector pixels can be combined virtually. The signal of this virtual pixel is now the sum of the physical individual pixels. Since the voxel resolution decreases by the 
+     same factor in the process, this is given a natural reasonable limit - in most cases only 4 physical pixels within a square are combined to one virtual pixel - this corresponds to binning 2. Another aspect is the size of the resulting data set. In the case of a 
+     2048 x 2048 pixel detector, the size of the resulting raw data set is 12.8 GB (Zeiss native format - txrm). By binning 2, the amount of data can be minimized by 1/(2x2x2) = 1/8 to 1.6 GB, which makes processing of the data set accessible on many systems in the first place.
+  </p>     
+
+<hr>
+
+<!-- ## RECONSTRUCTION ## -->
+  <h1 id="RECON">METADATA - Reconstruction</h1> 
+  <table border=0><tr><td>  <h2 id="RECON:Algorithm"><b>Algorithm</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>The tomographic reconstruction is performed with the help of a certain algorithm. This algorithm transforms the series of projection images into a tomogram which 
+     is saved as 3D dataset in native format of the used software or in open format (mostly TIFF). The algorithm can be algebraic, statistical or <i>Fourier</i>-based
+	 <a target="_blank" href="https://doi.org/10.1007/978-3-540-39408-2">[Buzug 2008]</a>. Until now, in cone beam X-ray tomography the <i>Filtered Back Projection</i>-algorithm <b>(FBP)</b> 
+	 is still the most popular one, used mainly in standard software implementations.</p> 
+<br>
+  <table border=0><tr><td>  <h2 id="RECON:Beam_Hardening_Correction"><b>Beam_Hardening_Correction</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>X-ray measurements are always connected with the appearance of artefacts in the final reconstruction. They can be caused by the measurement itself or the post processing
+     of the acquired data. Perhaps the best known artefact associated with polychromatic radiation is beam hardening. It is caused by the energy dependent X-ray absorption. High-energy
+     photons have a lower propability to be absorbed by the radiated matter than low-energy photons - the spectrum gets &lsquo;harder&rsquo;. This leads to much higher photon counts
+     e.g. on edges of structures compared to its volume. This can manifest as radial gray value gradients, glowing of edges or stars and streaks in case of high attenuating phases.
+     During reconstruction, artefact reduction can be performed, which is called <i>Beam Hardening Correction</i>.
+<br>
+<br>
+     A good summary of other artefacts in X-ray tomography is given by <a target="_blank" href="https://doi.org/10.1179/174328406X114117">[Davis &amp; Elliot 2013]</a>
+     and <a target="_blank" href="http://www.edboas.com/science/CT/0012.pdf">[Boas &amp; Fleischmann 2012]</a>
+  </p> 
+<br>
+  <table border=0><tr><td>  <h2 id="RECON:Smoothing"><b>Smoothing</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>A smoothing filter results in a slight blurring of the structures, which can simplify downstream image processing. In particle segmentation, for example, small measurement-related gray value fluctuations
+     within a phase can lead to errors. Of course, the filter reduces <i>Noise</i> but also <i>Details</i>, so, it should be used with caution. The value represents the kernel with minimum 0.5.
+  </p>
+
+<br>
+  <table border=0><tr><td>  <h2 id="RECON:Byte_Scaling_Min_Max"><b>Byte_Scaling_Min,Max</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Each voxel of the tomogram has a certain gray value that is part of an overall gray value histogram of the 3D dataset. If there are outliers in this histogram, it is sometimes
+     reasonable to cut them off (<i>Byte Scaling</i>) to have the fully available for the &lsquo;real&rsquo; information of the dataset. To the left side of the histogram (min: black), that means for low 
+     absorption and high counts, this could be e.g. air entrappments in solid embedding matrix structures. To the right side (max: white), that means for high absorption and low counts,
+     this could be e.g. high attenuating phases coming from metallic contamination in the particle sample (see also <i>Beam Hardening</i>. Note that the values are given in arbitrary
+     units and they are only comparible qualitativley in case of sample that are of same material and size.
+  </p>
+<hr>
+  
+<!-- IMAGE PROCESSING -->
+  <h1 id="IMGP:">METADATA - Image processing</h1>
+  <table border=0><tr><td>  <h2 id="IMGP:Software_Part12"><b>Software_Part1,2</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>Image processing can be performed with different software solutions - commercial software and self-written code. <i>Part 2</i> is only used if it is a second standalone 
+     software solution. This does not concern another method / module within the same framework. These details are described in more detail in the <i>Image Processing Workflow.</i></p> 
+<br>
+  <table border=0><tr><td>  <h2 id="IMGP:Image_Processing_Workflow_Part12"><b>Image_Processing_Workflow_Part1,2</b></h2>  </td><td><div class="tooltip"><a href="/"><img src="figures/back.png"></a><span class="tooltiptext">...back to PARROT main site</span></div></td></tr></table>
+  <p>The workflow of the applied image processing steps is shown separated by semicolons in such a way that it is possible in principle to reproduce and implement it in different
+     software packages. In the case of self-written code, no explicit names are listed, but principle methods.</p> 
+<br> 
+</body>
+</html>
