@@ -193,15 +193,15 @@ namespace OPD.Controllers
             sqlBuilder.Where("meas.measurement_id in @measurementId", new { measurementId = vm.DataViewModel.Where(i => i.Checked).Select(i => i.MeasurementId).ToList() });
             sqlBuilder.addBaseFilters(vm.FilterViewModel);
 
-            List<DownloadViewModel> download;
+            List<DownloadViewModelList> download;
             using (var connection = new MySqlConnection(DatabaseHelper.getDbConnectionString()))
             {
-                download = connection.Query<DownloadViewModel>(sql.RawSql, sql.Parameters).ToList();
+                download = connection.Query<DownloadViewModelList>(sql.RawSql, sql.Parameters).ToList();
             }
                         
             return PartialView(new CompleteViewModel()
             {
-                DownloadViewModel = download,
+                DownloadViewModel = new DownloadViewModel() { DownloadViewModelList = download },
                 FilterSettings = JsonConvert.SerializeObject(vm.FilterViewModel, Formatting.Indented)
             });
         }
@@ -212,80 +212,17 @@ namespace OPD.Controllers
         }
 
         [HttpPost]
-        public FileResult DownloadFile(CompleteViewModel vm)
+        public ActionResult DownloadFile(CompleteViewModel vm)
         {
-            FileResult result = DataHelper.Download(vm.DownloadViewModel.Where(x => x.Checked).Select(x => x.MeasurementId).ToList(), true, true, true);
+            List<int> measurementIds = vm.DownloadViewModel.DownloadViewModelList.Where(x => x.Checked).Select(x => x.MeasurementId).ToList<int>();
 
-            String fileName = "";
-            if (fileName == null) return null;
-            byte[] fileBytes = SIO.File.ReadAllBytes(Server.MapPath("~/data/" + fileName));
-            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+            string fs = DataHelper.Download(measurementIds,vm.FilterSettings, vm.DownloadViewModel.DownloadStl, vm.DownloadViewModel.DownloadVtk, vm.DownloadViewModel.DownloadCsv);
+
+            Response.Cookies.Add(new HttpCookie("OPD_download_done", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss:ff")));
+            if (fs == null) return null;                       
+            byte[] fileBytes = System.IO.File.ReadAllBytes(fs);
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, System.IO.Path.GetFileName(fs));
         }
-
-        [HttpPost]
-        public ActionResult Analytic(FilterViewModel vm)
-        {
-            return View();
-            //var context = new opdEntities();
-
-            //var top10Particles = (from particles in context.particles
-            //                              //join calcparams in context.v_calculatedparameters on particles.particle_id equals calcparams.particle_id
-            //                          select new SearchResultDetailsViewModel()
-            //                          {
-            //                              particle_id = particles.particle_id,
-            //                              volume = particles.volume,
-            //                              nr_object_voxels = particles.nr_object_voxels,
-            //                              nr_surface_voxels = particles.nr_surface_voxels,
-            //                              voxelSize = particles.measurement.voxel_size
-            //                          }).Take(10);
-
-            //var searchResultOverview = from particles in context.particles
-            //                          group particles by particles.measurement_id into measGroup
-            //                          //join calcparams in context.v_calculatedparameters on particles.particle_id equals calcparams.particle_id
-            //                          select new SearchResultOverview()
-            //                          {
-            //                              NumberOfRecords = measGroup.Count(),
-            //                              AverageVoxelSize = measGroup.Average(x => x.measurement.voxel_size)
-            //                          };
-
-            ////var srForZip = context.particles.Where(p => p.sample.material.Equals(vm.material)).Select(i => new { i.measurement.measurement_id, i.particle_id }).ToArray();
-            //var srForZip = context.particles.Select(i => new { i.measurement_id, i.sample.material, i.particle_id }).ToArray();
-
-            //String zipFileName = Guid.NewGuid() + ".zip";
-            //using (ZipOutputStream s = new ZipOutputStream(SIO.File.Create(Server.MapPath("~/data/"+zipFileName))))
-            //{
-
-            //    s.SetLevel(0); // 0 - store only to 9 - means best compression
-            //    byte[] buffer = new byte[4096];
-            //    foreach (var f in srForZip)
-            //    {
-            //        String file = Server.MapPath(string.Format("~/data/measurement/{0}/particles/{1}.vtk", f.measurement_id, f.particle_id));
-
-            //        if (System.IO.File.Exists(file))
-            //        {
-
-            //            ZipEntry entry = new ZipEntry(f.material.ToString()+"/"+System.IO.Path.GetFileName(file));
-            //            s.PutNextEntry(entry);
-
-            //            using (FileStream fs = SIO.File.OpenRead(file))
-            //            {
-            //                StreamUtils.Copy(fs, s, buffer);
-            //            }
-            //        }
-            //    }
-            //}
-
-            //SearchResultViewModel searchResult = new SearchResultViewModel()
-            //{
-            //    zipFileName = zipFileName
-            //};
-
-            //Thread t = new Thread(Helper.DataHelper.cleanDataDir);
-            //t.Start(Server.MapPath("~/data")); 
-
-            //return View("SearchResult", searchResult);
-        }
-        
 
         public ActionResult Engineer()
         {

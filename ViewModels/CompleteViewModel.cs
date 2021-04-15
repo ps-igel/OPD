@@ -9,7 +9,7 @@ namespace OPD.ViewModels
     {
         public FilterViewModel FilterViewModel { get; set; }
         public List<DataViewModel> DataViewModel { get; set; }
-        public List<DownloadViewModel> DownloadViewModel { get; set; }
+        public DownloadViewModel DownloadViewModel { get; set; }
         public List<SearchViewModel> SearchViewModel { get; set; }
 
         public String FilterSettings { get; set; }

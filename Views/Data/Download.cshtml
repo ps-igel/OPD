@@ -8,67 +8,108 @@
 </div>
 <br />
 
-@if (Model != null && Model.DownloadViewModel.Count() == 0)
+@if (Model != null && Model.DownloadViewModel.DownloadViewModelList.Count() == 0)
 {
     <p>Oops, something went wrong. :-( </p>
 }
 else
 {
-    using (Ajax.BeginForm("DownloadFile", "Data", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "" }))
+    //using (Ajax.BeginForm("DownloadFile", "Data", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "divDownloadFile", LoadingElementId = "download_loading" }))
+    using (Html.BeginForm("DownloadFile", "Data", FormMethod.Post, new { id = "frmDownload" }))
     {
         @Html.AntiForgeryToken();
 
         @Html.HiddenFor(model => model.FilterSettings);
+
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].Checked)</th>
-                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].Material)</th>
-                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].FileNameAndPathToStl)</th>
-                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].DownloadStl)</th>
-                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].DownloadVtk)</th>
-                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel[0].DownloadCsv) </th>
+                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel.DownloadViewModelList[0].Checked)</th>
+                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel.DownloadViewModelList[0].Material)</th>
+                    <th scope="col">@Html.LabelFor(m => Model.DownloadViewModel.DownloadViewModelList[0].FileNameAndPathToStl)</th>
                 </tr>
             </thead>
             <tbody>
 
-                @for (int i = 0; i < Model.DownloadViewModel.Count; i++)
+                @for (int i = 0; i < Model.DownloadViewModel.DownloadViewModelList.Count(); i++)
                 {
-                <tr>
+                    <tr>
+                        <td>
+                            @Html.CheckBoxFor(m => Model.DownloadViewModel.DownloadViewModelList[i].Checked)
+                            @Html.HiddenFor(m => Model.DownloadViewModel.DownloadViewModelList[i].MeasurementId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => Model.DownloadViewModel.DownloadViewModelList[i].Material)
+                        </td>
+                        <td>
+                            @*<img src='@Model[i].FileName' alt='@Model[i].FileName' style="width:150px" />*@
+                            <div id="@("stl" + Model.DownloadViewModel.DownloadViewModelList[i].MeasurementId)" style="background-color:#000000; width:200px; height:200px"></div>
+                            <script type="text/javascript">
+                                var stl_viewer_@("stl" + Model.DownloadViewModel.DownloadViewModelList[i].MeasurementId) = new StlViewer(document.getElementById("@("stl" + Model.DownloadViewModel.DownloadViewModelList[i].MeasurementId)"), { models: [{ id: @(Model.DownloadViewModel.DownloadViewModelList[i].MeasurementId), filename: "@Model.DownloadViewModel.DownloadViewModelList[i].FileNameAndPathToStl", load_three_files: "/Scripts/stl", animation: { delta: { rotationy: 1, msec: 1000, loop: true } } }] });
+                            </script>
+                        </td>
+                    </tr>
+                }
+                <tr style="background-color:lightcoral">
                     <td>
-                        @Html.CheckBoxFor(m => Model.DownloadViewModel[i].Checked)
-                        @Html.HiddenFor(m => Model.DownloadViewModel[i].MeasurementId)
+                        @Html.CheckBoxFor(m => Model.DownloadViewModel.DownloadStl) @Html.LabelFor(m => Model.DownloadViewModel.DownloadStl)
                     </td>
                     <td>
-                        @Html.DisplayFor(m => Model.DownloadViewModel[i].Material)
+                        @Html.CheckBoxFor(m => Model.DownloadViewModel.DownloadVtk) @Html.LabelFor(m => Model.DownloadViewModel.DownloadVtk)
                     </td>
                     <td>
-                        @*<img src='@Model[i].FileName' alt='@Model[i].FileName' style="width:150px" />*@
-                        <div id="@("stl" + Model.DownloadViewModel[i].MeasurementId)" style="background-color:#000000; width:200px; height:200px"></div>
-                        <script type="text/javascript">
-                                var stl_viewer_@("stl" + Model.DownloadViewModel[i].MeasurementId) = new StlViewer(document.getElementById("@("stl" + Model.DownloadViewModel[i].MeasurementId)"), { models: [{ id: @(Model.DownloadViewModel[i].MeasurementId), filename: "@Model.DownloadViewModel[i].FileNameAndPathToStl", load_three_files: "/Scripts/stl", animation: { delta: { rotationy: 1, msec: 1000, loop: true } } }] });
-                        </script>
-                    </td>
-                    <td>
-                        @Html.CheckBoxFor(m => Model.DownloadViewModel[i].DownloadStl)
-                    </td>
-                    <td>
-                        @Html.CheckBoxFor(m => Model.DownloadViewModel[i].DownloadVtk)
-                    </td>
-                    <td>
-                        @Html.CheckBoxFor(m => Model.DownloadViewModel[i].DownloadCsv)
+                        @Html.CheckBoxFor(m => Model.DownloadViewModel.DownloadCsv) @Html.LabelFor(m => Model.DownloadViewModel.DownloadCsv)
                     </td>
                 </tr>
-                }
-
             </tbody>
         </table>
         @*<a class="btn btn-primary" href="/Data/Download?fileName=">Download selected</a>*@
         <div class="form-group">
-            <button class="btn btn-primary" type="submit">
+            <button class="btn btn-primary" type="submit" id="btnDownload">
                 <span class="glyphicon glyphicon-search"></span>
                 Download selected
+                <img id="download_loading" style="display:none" src="@Url.Content("~/images/loading.gif")" alt="" width="18" />
             </button>
         </div>
+
+        <script>
+            //this shows the loading spinner and hides it when the data controller sets the OPD_download_done cookie
+            $("form").submit(function () {
+                $("#download_loading").css("display", "inline");                
+                checkCookie();
+            });
+
+            var timeoutId;            
+            function checkCookie() {
+                if (!cookieExists("OPD_download_done") || cookieHasValue("OPD_download_done","undefined")) {
+                    timeoutId = setTimeout("checkCookie();", 1000);
+                }
+                else {
+                    $("#download_loading").css("display", "none");
+                    document.cookie = "OPD_download_done=undefined";                                     
+                    clearTimeout(timeoutId);
+                }
+            } 
+
+            function cookieHasValue(name,value) {
+                if (document.cookie.split(';').some(function (item)
+                {
+                    return item.indexOf(name + '=' + value) >= 0;
+                }))
+                {
+                    return true;
+                }
+                return false;
+            };
+
+            function cookieExists(name) {
+                if (document.cookie.split(';').some(function (item) {
+                    return item.trim().indexOf(name+'=') == 0
+                })) {
+                    return true;
+                }
+                return false;
+            };
+        </script>
     }
 }
