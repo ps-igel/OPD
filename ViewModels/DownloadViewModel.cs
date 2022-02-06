@@ -10,13 +10,13 @@ namespace OPD.ViewModels
     {
         public List<DownloadViewModelList> DownloadViewModelList { get; set; }
 
-        [Display(Name = "volume data - voxel (*.vtk)")]
+        [Display(Name = "Surface representation (*.vtk)")]
         public bool DownloadVtk { get; set; }
 
-        [Display(Name = "volume data - voxel (*.stl)")]
+        [Display(Name = "Surface representation (*.stl)")]
         public bool DownloadStl { get; set; }
 
-        [Display(Name = "complete data + metadata (*.csv)")]
+        [Display(Name = "parameters + metadata (*.csv)")]
         public bool DownloadCsv { get; set; }
     }
 
